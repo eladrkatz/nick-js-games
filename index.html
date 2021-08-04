@@ -2,9 +2,19 @@
 
 <script>
 
-const myButton = document.getElementById('myButton');
+window.addEventListener('load', document_loaded);
 
-myButton.innerText = "Moshe";
+function document_loaded() {
+    const myButton = document.getElementById('myButton');
+
+    myButton.innerText = "Moshe";
+
+    myButton.addEventListener('click', button_clicked);
+}
+
+function button_clicked() {
+    console.log('the button has been clicked');
+}
 
 
 
