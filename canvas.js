@@ -1,32 +1,60 @@
 window.addEventListener('load', window_loaded); 
 
+let ctx = null;
+
 function window_loaded() {
 
     const theCanvas = document.getElementById('theCanvas');
 
+    theCanvas.addEventListener('mousemove', canvasMouseMove);
+    theCanvas.addEventListener('mousedown', canvasMouseDown);
+
     console.log(theCanvas);
 
-    const ctx = theCanvas.getContext('2d');
+    ctx = theCanvas.getContext('2d');
     
-    for(let j = 0; j < 9; j++){
-        ctx.beginPath();
-        ctx.moveTo(100.5, 100.5 + j * 100);
-        ctx.lineTo(900.5, 100.5 + j * 100);
-        ctx.moveTo(100.5  + j * 100, 100.5);
-        ctx.lineTo(100.5 + j * 100, 900.5);
-        ctx.stroke();
-    }
+    const boxSize = 80;
+    const boardTop = 100;
+    const boardSize = 8;
+    const boardBottom = boardTop + boxSize * boardSize;
     
-    for(let i1 = 1; i1 < 9; i1++){
-        for(let i2 = 1; i2 < 9; i2++){
-            if(i1 % 2 == 0){
-                ctx.fillStyle = 'rgb(255, 255, 0)';
-                ctx.fillRect(i2 * 200 + 0.5, i1 * 100 + 0.5, 100, 100);
+
+    const checkedColor = 'rgb(200, 100, 50)';
+    
+       
+    for(let i1 = 0; i1 < boardSize; i1++){
+        for(let i2 = 0; i2 < boardSize; i2++){
+            if(i1 % 2 == 0 && i2 % 2 == 0){
+                ctx.fillStyle = checkedColor;
+                ctx.fillRect(i2 * boxSize + boardTop, i1 * boxSize + boardTop, boxSize, boxSize);
             }
-            else if(i2 % 2 != 0){
-                ctx.fillStyle = 'rgb(255, 255, 0)';
-                ctx.fillRect(i2 * 100 + 0.5, i1 * 100 + 0.5, 100, 100);
+            else if(i2 % 2 != 0 && i1 % 2 != 0){
+                ctx.fillStyle = checkedColor;
+                ctx.fillRect(i2 * boxSize + boardTop, i1 * boxSize +boardTop, boxSize, boxSize);
             }
         }
     }
+
+    for(let j = 0; j < boardSize + 1; j++){
+        ctx.beginPath();
+        ctx.moveTo(boardTop, boardTop + j * boxSize);
+        ctx.lineTo(boardBottom, boardTop + j * boxSize);
+        ctx.moveTo(boardTop  + j * boxSize, boardTop);
+        ctx.lineTo(boardTop + j * boxSize, boardBottom);
+        ctx.stroke();
+    }
+
+    ctx.beginPath();
+    ctx.arc(100 + 40, 100 + 40, boxSize / 2, 0, 2 * Math.PI);
+    ctx.stroke();
+ 
+}
+
+
+function canvasMouseMove(e){
+    console.log('mouse move' + e);
+}
+
+function canvasMouseDown(e){
+    console.log('mouse down' + e)
 }
