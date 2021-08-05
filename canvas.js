@@ -43,11 +43,45 @@ function window_loaded() {
         ctx.lineTo(boardTop + j * boxSize, boardBottom);
         ctx.stroke();
     }
+    
 
-    ctx.beginPath();
-    ctx.arc(100 + 40, 100 + 40, boxSize / 2, 0, 2 * Math.PI);
-    ctx.stroke();
- 
+    let num = boxSize / 2;
+    for(let j1 = 0; j1 < boardSize; j1++){
+        for(let j2 = 0; j2 < boardSize; j2++){
+            if(j1 < 3){
+                if(j1 % 2 == 0 && j2 % 2 == 0){
+                    ctx.beginPath();
+                    ctx.arc(j2 * boxSize + boardTop + num, j1 * boxSize + boardTop + num, boxSize / 2 - boxSize / 8, 0, 2 * Math.PI);
+                    ctx.fillStyle = "black";
+                    ctx.fill();
+                    ctx.stroke();
+                }
+                else if(j2 % 2 != 0 && j1 % 2 != 0){
+                    ctx.beginPath();
+                    ctx.arc(j2 * boxSize + boardTop + num, j1 * boxSize + boardTop + num, boxSize / 2 - boxSize / 8, 0, 2 * Math.PI);
+                    ctx.fillStyle = "black";
+                    ctx.fill();
+                    ctx.stroke();
+                }
+            }
+            else if(j1 > 4){
+                if(j1 % 2 == 0 && j2 % 2 == 0){
+                    ctx.beginPath();
+                    ctx.arc(j2 * boxSize + boardTop + num, j1 * boxSize + boardTop + num, boxSize / 2 - boxSize / 8, 0, 2 * Math.PI);
+                    ctx.fillStyle = "red";
+                    ctx.fill();
+                    ctx.stroke();
+                }
+                else if(j2 % 2 != 0 && j1 % 2 != 0){
+                    ctx.beginPath();
+                    ctx.arc(j2 * boxSize + boardTop + num, j1 * boxSize + boardTop + num, boxSize / 2 - boxSize / 8, 0, 2 * Math.PI);
+                    ctx.fillStyle = "red";
+                    ctx.fill();
+                    ctx.stroke();
+                }
+            }
+        }
+    }
 }
 
 
