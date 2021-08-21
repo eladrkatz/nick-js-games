@@ -24,7 +24,6 @@ function window_loaded() {
     console.log(theCanvas);
 
     ctx = theCanvas.getContext('2d');
-    
        
     drawBoard();
 
@@ -90,7 +89,14 @@ function drawBoard() {
 }
 
 function canvasMouseMove(e){
-    console.log('mouse move' + e);
+    // console.log('mouse move' + e);
+
+    const x = Math.floor((e.offsetX - BOARD_TOP) / (BOX_SIZE));
+    const y = Math.floor((e.offsetY - BOARD_TOP) / (BOX_SIZE));
+
+    drawPiece(x, y, 'blue');
+    console.log(x, y);
+    // debugger;
 }
 
 function canvasMouseDown(e){
