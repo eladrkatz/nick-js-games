@@ -9,6 +9,19 @@ const PLAYER_1_COLOR = "black";
 const PLAYER_2_COLOR = "red";
 const PIECE_RADIUS = BOX_SIZE * 3 / 8;
 
+const gameState = {
+    board: [
+        [0,1,0,1,0,1,0,1],
+        [1,0,1,0,1,0,1,0],
+        [0,1,0,1,0,1,0,1],
+        [0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0],
+        [2,0,2,0,2,0,2,0],
+        [0,2,0,2,0,2,0,2],
+        [2,0,2,0,2,0,2,0]
+    ]
+};
+
 
 window.addEventListener('load', window_loaded); 
 
@@ -27,19 +40,8 @@ function window_loaded() {
        
     drawBoard();
 
-    const gameState = {
-        board: [
-            [0,1,0,1,0,1,0,1],
-            [1,0,1,0,1,0,1,0],
-            [0,1,0,1,0,1,0,1],
-            [0,0,0,0,0,0,0,0],
-            [0,0,0,0,0,0,0,0],
-            [2,0,2,0,2,0,2,0],
-            [0,2,0,2,0,2,0,2],
-            [2,0,2,0,2,0,2,0]
-        ]
-    };
     
+
 
     for (let i=0; i < BOARD_SIZE; i++) {
         for (let j=0; j < BOARD_SIZE; j++) {
@@ -89,16 +91,27 @@ function drawBoard() {
 }
 
 function canvasMouseMove(e){
-    // console.log('mouse move' + e);
 
     const x = Math.floor((e.offsetX - BOARD_TOP) / (BOX_SIZE));
     const y = Math.floor((e.offsetY - BOARD_TOP) / (BOX_SIZE));
 
-    drawPiece(x, y, 'blue');
-    console.log(x, y);
-    // debugger;
+
 }
 
 function canvasMouseDown(e){
-    console.log('mouse down' + e)
+    
+    const x = Math.floor((e.offsetX - BOARD_TOP) / (BOX_SIZE));
+    const y = Math.floor((e.offsetY - BOARD_TOP) / (BOX_SIZE));
+
+    console.log(x, y);
+    const chack = gameState.board[y][x];
+    if (chack === 1){
+        console.log('black'); 
+    }
+    else if (chack === 2){
+        console.log('red'); 
+    } else {
+        console.log('empty'); 
+    }
+
 }
