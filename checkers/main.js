@@ -98,21 +98,17 @@ function drawBoard() {
 function canvasMouseMove(e){
 
     const [x, y] = getPositionInBoard(e);
+    if(y > -1 && y < 8 && x > -1 && x < 8){
+        const check = gameState.board[y][x];
     
-    const check = gameState.board[y][x];
-
-    if (check) { 
-        gameState.hovered = { x, y};
-    } else {
-        gameState.hovered = {x: -1, y: -1};
+        if (check) { 
+            gameState.hovered = {x, y};
+        } else {
+            gameState.hovered = {x: -1, y: -1};
+        }
+        
+        drawBoard();
     }
-
-
-    drawBoard();
-
-    // if (game) {
-        // const chack = gameState.board[y][x];
-    // }
 
 
 }
@@ -127,9 +123,10 @@ function getPositionInBoard(e) {
 function canvasMouseDown(e){
     
     const [x, y] = getPositionInBoard(e);
+    
+    if(y > -1 && y < 8 && x > -1 && x < 8){
+        const check = gameState.board[y][x];
 
-    const check = gameState.board[y][x];
-
-    console.log(colors[check]);
-
+        console.log(colors[check]);
+    }
 }
