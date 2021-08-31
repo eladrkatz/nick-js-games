@@ -105,11 +105,11 @@ function drawBoard() {
     }
 
 
-    ctx.font = '10px Tahoma';
+    ctx.font = '14px Tahoma';
     ctx.fillStyle = 'black';
-    ctx.fillText(`Turn of ${colors[gameState.turn]}`, 0, 50);
+    ctx.fillText(`Turn of ${colors[gameState.turn]}`, 50, 30);
 
-    console.log(gameState);
+    // console.log(gameState);
 }
 
 function drawBoardSlot(i, j, color) {
@@ -152,24 +152,18 @@ function slotFreeForPlay(nx, ny) {
     }
     const { x, y } = gameState.currentTurn;
 
-    const { turn } = gameState;
 
-    const yDelta = turn === 1 ? 1 : -1;
+    const moves = getAvailableMovesFromPosition(x,y);
 
-    const pos1 = { x: x - 1, y: y + yDelta }
-    const pos2 = { x: x + 1, y: y + yDelta }
+    // for(let i = 0; i < moves.length; i++) {
+    //     if (moves[i].x === nx && moves[i].y === ny) {
+    //         return true;
+    //     }
+    // }
 
-    const firstPositionAvailable = isPositionAvailableForPlayer(pos1);
-    const secondPositionAvailable = isPositionAvailableForPlayer(pos2);
+    const isAnyMoveAvailable = moves.some(m => m.x === nx && m.y === ny);
 
-    if (firstPositionAvailable && pos1.x === nx && pos1.y === ny) {
-        return true;
-    }
-    if (secondPositionAvailable && pos2.x === nx && pos2.y === ny) {
-        return true;
-    }
-
-    return false;
+    return isAnyMoveAvailable;
 }
 
 function getPositionInBoard(e) {
@@ -228,17 +222,9 @@ function canPieceMove(x, y) {
         return false;
     }
 
-    const { turn } = gameState;
+    const moves = getAvailableMovesFromPosition(x,y);
 
-    const yDelta = turn === 1 ? 1 : -1;
-
-    const pos1 = { x: x - 1, y: y + yDelta }
-    const pos2 = { x: x + 1, y: y + yDelta }
-
-    const firstPositionAvailable = isPositionAvailableForPlayer(pos1);
-    const secondPositionAvailable = isPositionAvailableForPlayer(pos2);
-
-    return (firstPositionAvailable || secondPositionAvailable)
+    return moves.length > 0;
 }
 
 function isPositionAvailableForPlayer(pos) {
@@ -251,4 +237,23 @@ function isPositionAvailableForPlayer(pos) {
 
 function checkOutOfBoard(x, y) {
     return (y < 0 || y > 7 || x < 0 || x > 7);
+}
+
+function getAvailableMovesFromPosition(x,y) {
+    const { turn } = gameState;
+
+    const yDelta = turn === 1 ? 1 : -1;
+
+    const pos1 = { x: x - 1, y: y + yDelta }
+    const pos2 = { x: x + 1, y: y + yDelta }
+
+    const firstPositionAvailable = isPositionAvailableForPlayer(pos1);
+    const secondPositionAvailable = isPositionAvailableForPlayer(pos2);
+
+    const moves = [];
+    if (firstPositionAvailable) moves.push(pos1);
+    if (secondPositionAvailable) moves.push(pos2);
+
+    return moves;
+
 }
