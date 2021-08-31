@@ -6,25 +6,30 @@ const BOARD_BOTTOM = BOARD_TOP + BOX_SIZE * BOARD_SIZE;
 const checkedColor = 'rgb(200, 100, 50)';
 const PIECE_RADIUS = BOX_SIZE * 3 / 8;
 
-const colors = ["" ,"black", "red"];
-const hoverColor = "blue";
+const colors = ["", "black", "red"];
+const highlight_colors = ["", "brown", "orange"];
+const hoverColor = "rgba(100, 255, 255, 0.2)";
+const moveColor = "rgba(100, 0, 255, 0.2)";
 
 const gameState = {
     board: [
-        [0,1,0,1,0,1,0,1],
-        [1,0,1,0,1,0,1,0],
-        [0,1,0,1,0,1,0,1],
-        [0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0],
-        [2,0,2,0,2,0,2,0],
-        [0,2,0,2,0,2,0,2],
-        [2,0,2,0,2,0,2,0]
+        [0, 1, 0, 1, 0, 1, 0, 1],
+        [1, 0, 1, 0, 1, 0, 1, 0],
+        [0, 1, 0, 1, 0, 1, 0, 1],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [2, 0, 2, 0, 2, 0, 2, 0],
+        [0, 2, 0, 2, 0, 2, 0, 2],
+        [2, 0, 2, 0, 2, 0, 2, 0]
     ],
-    hovered: {x : -1, y: -1}
+    hovered: { x: -1, y: -1 },
+    turn: 1,
+    currentTurn: null,
+    possibleMove: null
 };
 
 
-window.addEventListener('load', window_loaded); 
+window.addEventListener('load', window_loaded);
 
 let ctx = null;
 
@@ -38,7 +43,7 @@ function window_loaded() {
     console.log(theCanvas);
 
     ctx = theCanvas.getContext('2d');
-       
+
     drawBoard();
 
 
@@ -56,17 +61,15 @@ function drawPiece(i, j, color) {
 function drawBoard() {
 
     ctx.fillStyle = "white";
-    ctx.fillRect(BOARD_TOP, BOARD_TOP, 8  * BOX_SIZE + BOARD_TOP, 8 * BOX_SIZE + BOARD_TOP);
+    ctx.fillRect(0, 0, 700, 700);
 
     for (let i = 0; i < BOARD_SIZE; i++) {
         for (let j = 0; j < BOARD_SIZE; j++) {
             if (i % 2 == 0 && j % 2 == 0) {
-                ctx.fillStyle = checkedColor;
-                ctx.fillRect(j * BOX_SIZE + BOARD_TOP, i * BOX_SIZE + BOARD_TOP, BOX_SIZE, BOX_SIZE);
+                drawBoardSlot(j, i, checkedColor);
             }
             else if (j % 2 != 0 && i % 2 != 0) {
-                ctx.fillStyle = checkedColor;
-                ctx.fillRect(j * BOX_SIZE + BOARD_TOP, i * BOX_SIZE + BOARD_TOP, BOX_SIZE, BOX_SIZE);
+                drawBoardSlot(j, i, checkedColor);
             }
         }
     }
@@ -80,11 +83,15 @@ function drawBoard() {
         ctx.stroke();
     }
 
-    for (let i=0; i < BOARD_SIZE; i++) {
-        for (let j=0; j < BOARD_SIZE; j++) {
+    for (let i = 0; i < BOARD_SIZE; i++) {
+        for (let j = 0; j < BOARD_SIZE; j++) {
             const place = gameState.board[j][i];
             if (place !== 0) {
-                drawPiece(i, j, colors[place]);
+                if (gameState.currentTurn && gameState.currentTurn.x === i && gameState.currentTurn.y === j) {
+                    drawPiece(i, j, highlight_colors[place]);
+                } else {
+                    drawPiece(i, j, colors[place]);
+                }
             }
         }
     }
@@ -93,24 +100,76 @@ function drawBoard() {
         drawPiece(gameState.hovered.x, gameState.hovered.y, hoverColor);
     }
 
-}
-
-function canvasMouseMove(e){
-
-    const [x, y] = getPositionInBoard(e);
-    if(y > -1 && y < 8 && x > -1 && x < 8){
-        const check = gameState.board[y][x];
-    
-        if (check) { 
-            gameState.hovered = {x, y};
-        } else {
-            gameState.hovered = {x: -1, y: -1};
-        }
-        
-        drawBoard();
+    if (gameState.possibleMove) {
+        drawBoardSlot(gameState.possibleMove.x, gameState.possibleMove.y, moveColor);
     }
 
 
+    ctx.font = '10px Tahoma';
+    ctx.fillStyle = 'black';
+    ctx.fillText(`Turn of ${colors[gameState.turn]}`, 0, 50);
+
+    console.log(gameState);
+}
+
+function drawBoardSlot(i, j, color) {
+    ctx.fillStyle = color;
+    ctx.fillRect(i * BOX_SIZE + BOARD_TOP, j * BOX_SIZE + BOARD_TOP, BOX_SIZE, BOX_SIZE);
+}
+
+function canvasMouseMove(e) {
+
+    const [x, y] = getPositionInBoard(e);
+
+    if (checkOutOfBoard(x, y)) {
+        gameState.possibleMove = null;
+        return;
+    }
+    const check = gameState.board[y][x];
+
+    if (check) {
+        gameState.hovered = { x, y };
+    } else {
+        gameState.hovered = { x: -1, y: -1 };
+    }
+
+    const isSlotFreeForPlay = slotFreeForPlay(x, y);
+
+    if (isSlotFreeForPlay) {
+        gameState.possibleMove = { x, y }
+    } else {
+        gameState.possibleMove = null;
+    }
+
+    drawBoard();
+
+
+}
+
+function slotFreeForPlay(nx, ny) {
+    if (!gameState.currentTurn) {
+        return false;
+    }
+    const { x, y } = gameState.currentTurn;
+
+    const { turn } = gameState;
+
+    const yDelta = turn === 1 ? 1 : -1;
+
+    const pos1 = { x: x - 1, y: y + yDelta }
+    const pos2 = { x: x + 1, y: y + yDelta }
+
+    const firstPositionAvailable = isPositionAvailableForPlayer(pos1);
+    const secondPositionAvailable = isPositionAvailableForPlayer(pos2);
+
+    if (firstPositionAvailable && pos1.x === nx && pos1.y === ny) {
+        return true;
+    }
+    if (secondPositionAvailable && pos2.x === nx && pos2.y === ny) {
+        return true;
+    }
+
+    return false;
 }
 
 function getPositionInBoard(e) {
@@ -120,13 +179,76 @@ function getPositionInBoard(e) {
     return [x, y];
 }
 
-function canvasMouseDown(e){
-    
-    const [x, y] = getPositionInBoard(e);
-    
-    if(y > -1 && y < 8 && x > -1 && x < 8){
-        const check = gameState.board[y][x];
+function canvasMouseDown(e) {
 
-        console.log(colors[check]);
+    const [x, y] = getPositionInBoard(e);
+
+    if (checkOutOfBoard(x, y)) {
+        return;
     }
+
+
+    if (gameState.possibleMove) {
+        let { x, y } = gameState.currentTurn;
+        gameState.board[y][x] = 0;
+        ({ x, y } = gameState.possibleMove);
+        gameState.board[y][x] = gameState.turn;
+
+        gameState.currentTurn = null;
+        gameState.possibleMove = null;
+        gameState.turn = 3 - gameState.turn;
+
+        drawBoard();
+        return;
+    }
+
+
+
+    const pieceCanMove = canPieceMove(x, y);
+
+    if (pieceCanMove) {
+        if (!gameState.currentTurn) {
+            gameState.currentTurn = {
+                x: x,
+                y: y
+            }
+        }
+    }
+
+    drawBoard();
+}
+
+function canPieceMove(x, y) {
+
+    const playerAtPosition = gameState.board[y][x];
+
+    const rightTurn = playerAtPosition === gameState.turn;
+
+    if (!rightTurn) {
+        return false;
+    }
+
+    const { turn } = gameState;
+
+    const yDelta = turn === 1 ? 1 : -1;
+
+    const pos1 = { x: x - 1, y: y + yDelta }
+    const pos2 = { x: x + 1, y: y + yDelta }
+
+    const firstPositionAvailable = isPositionAvailableForPlayer(pos1);
+    const secondPositionAvailable = isPositionAvailableForPlayer(pos2);
+
+    return (firstPositionAvailable || secondPositionAvailable)
+}
+
+function isPositionAvailableForPlayer(pos) {
+    if (checkOutOfBoard(pos.x, pos.y)) {
+        return false;
+    }
+
+    return (gameState.board[pos.y][pos.x] === 0);
+}
+
+function checkOutOfBoard(x, y) {
+    return (y < 0 || y > 7 || x < 0 || x > 7);
 }
