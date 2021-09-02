@@ -204,7 +204,11 @@ function canvasMouseDown(e) {
         if (!gameState.currentTurn) {
             gameState.currentTurn = {
                 x: x,
-                y: y
+                y: y  
+            }
+        } else {
+            if (gameState.currentTurn.x === x && gameState.currentTurn.y === y) {
+                gameState.currentTurn = null;
             }
         }
     }
