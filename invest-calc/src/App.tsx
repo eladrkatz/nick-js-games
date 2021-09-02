@@ -1,6 +1,7 @@
 import React, { useState, useEffect, CanvasHTMLAttributes, SetStateAction, Dispatch } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import { queryByLabelText } from '@testing-library/react';
 
 const canavasSize = {
     width: 1000, height: 600
@@ -93,6 +94,7 @@ function drawOnCanvas(start: number, monthly: number, interest: number, years: n
 
 
     let money = start;
+    let onlyInterestEarning = 0;
 
     ctx.strokeStyle = "black";
     ctx.beginPath();
@@ -105,9 +107,15 @@ function drawOnCanvas(start: number, monthly: number, interest: number, years: n
         ctx.lineTo(x, y);
 
         money += (monthly * 12);
-        money *= ((100 + interest) / 100);
+        const yearlyInterest = money * (interest / 100);
+        money += yearlyInterest;
+        onlyInterestEarning += yearlyInterest;
 
     }
+
+    console.log(onlyInterestEarning);
+    console.log(onlyInterestEarning * 0.25);
+    console.log((money - onlyInterestEarning * 0.25) / 12);
 
     ctx.stroke();
 
@@ -127,7 +135,8 @@ function drawOnCanvas(start: number, monthly: number, interest: number, years: n
         ctx.fill();
 
         money += (monthly * 12);
-        money *= ((100 + interest) / 100);
+        const yearlyInterest = money * (interest / 100);
+        money += yearlyInterest;
 
     }
 
