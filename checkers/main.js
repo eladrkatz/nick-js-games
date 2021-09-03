@@ -28,7 +28,6 @@ const gameState = {
     possibleMove: null
 };
 
-
 window.addEventListener('load', window_loaded);
 
 let ctx = null;
@@ -184,9 +183,22 @@ function canvasMouseDown(e) {
 
     if (gameState.possibleMove) {
         let { x, y } = gameState.currentTurn;
+        const { turn } = gameState;
+        const yDelta1 = turn === 1 ? 1 : -1;
+        const yDelta2 = turn === 1 ? 2 : -2;
+        const atkPos1 = { x: x - 2, y: y + yDelta2 }
+        const atkPos2 = { x: x + 2, y: y + yDelta2 }
+
         gameState.board[y][x] = 0;
+        if(gameState.possibleMove.x === atkPos1.x && gameState.possibleMove.y === atkPos1.y){
+            gameState.board[y + yDelta1][x - 1] = 0;        
+        }
+        if(gameState.possibleMove.x === atkPos2.x && gameState.possibleMove.y === atkPos2.y){
+            gameState.board[y + yDelta1][x + 1] = 0;        
+        }
         ({ x, y } = gameState.possibleMove);
         gameState.board[y][x] = gameState.turn;
+        
 
         gameState.currentTurn = null;
         gameState.possibleMove = null;
@@ -246,17 +258,25 @@ function checkOutOfBoard(x, y) {
 function getAvailableMovesFromPosition(x,y) {
     const { turn } = gameState;
 
-    const yDelta = turn === 1 ? 1 : -1;
+    const yDelta1 = turn === 1 ? 1 : -1;
+    const yDelta2 = turn === 1 ? 2 : -2;
 
-    const pos1 = { x: x - 1, y: y + yDelta }
-    const pos2 = { x: x + 1, y: y + yDelta }
+    const pos1 = { x: x - 1, y: y + yDelta1 }
+    const pos2 = { x: x + 1, y: y + yDelta1 }
+    const pos3 = { x: x - 2, y: y + yDelta2 }
+    const pos4 = { x: x + 2, y: y + yDelta2 }
 
     const firstPositionAvailable = isPositionAvailableForPlayer(pos1);
     const secondPositionAvailable = isPositionAvailableForPlayer(pos2);
+    const thirdPositionAvailable = isPositionAvailableForPlayer(pos3);
+    const fourthPositionAvailable = isPositionAvailableForPlayer(pos4);
+
 
     const moves = [];
     if (firstPositionAvailable) moves.push(pos1);
     if (secondPositionAvailable) moves.push(pos2);
+    if (thirdPositionAvailable && !firstPositionAvailable && gameState.board[pos1.y][pos1.x] != gameState.turn) moves.push(pos3);
+    if (fourthPositionAvailable && !secondPositionAvailable && gameState.board[pos2.y][pos2.x] != gameState.turn) moves.push(pos4);
 
     return moves;
 
