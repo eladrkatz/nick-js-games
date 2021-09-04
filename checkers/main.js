@@ -281,3 +281,26 @@ function getAvailableMovesFromPosition(x,y) {
     return moves;
 
 }
+
+function numberOfPiecesLeft(){
+    let numberOfBlackPieces = 0;
+    let numberOfBlackPieces = 0;
+    for (let i = 0; i < 8; i++) {
+        for (let j = 0; j < 8; j++){
+            if(gameState.board[i][j] === 1){
+                numberOfBlackPieces++;
+            }
+            if(gameState.board[i][j] === 2){
+                numberOfRedPieces++;
+            }
+        }
+    }
+
+    ctx.font = '14px Tahoma';
+    ctx.fillStyle = 'black';
+    ctx.fillText(`Black have ${numberOfBlackPieces}pieces`, 150, 30);
+
+    ctx.font = '14px Tahoma';
+    ctx.fillStyle = 'black';
+    ctx.fillText(`Red have ${numberOfBlackPieces}pieces`, 100, 30);
+}
