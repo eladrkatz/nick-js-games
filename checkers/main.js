@@ -7,7 +7,7 @@ const checkedColor = 'rgb(200, 100, 50)';
 const PIECE_RADIUS = BOX_SIZE * 3 / 8;
 
 const colors = ["", "black", "red"];
-const highlight_colors = ["", "brown", "orange"];
+const highlight_colors = ["", "gray", "yellow"];
 const hoverColor = "rgba(100, 255, 255, 0.2)";
 const moveColor = "rgba(100, 0, 255, 0.2)";
 
@@ -108,7 +108,10 @@ function drawBoard() {
     ctx.fillStyle = 'black';
     ctx.fillText(`Turn of ${colors[gameState.turn]}`, 50, 30);
 
-    numberOfPiecesLeft();
+
+    const score = numberOfPiecesLeft();
+
+    drawScore(score.numberOfBlackPieces, score.numberOfRedPieces);
 
 }
 
@@ -125,9 +128,9 @@ function canvasMouseMove(e) {
         gameState.possibleMove = null;
         return;
     }
-    const check = gameState.board[y][x];
+    const slotAtMousePosition = gameState.board[y][x];
 
-    if (check) {
+    if (slotAtMousePosition === gameState.turn) {
         gameState.hovered = { x, y };
     } else {
         gameState.hovered = { x: -1, y: -1 };
@@ -283,7 +286,7 @@ function getAvailableMovesFromPosition(x,y) {
 
 }
 
-function numberOfPiecesLeft(){
+function numberOfPiecesLeft() {
     let numberOfBlackPieces = 0;
     let numberOfRedPieces = 0;
     for (let i = 0; i < 8; i++) {
@@ -297,6 +300,17 @@ function numberOfPiecesLeft(){
         }
     }
 
+    // numberOfBlackPieces = gameState.board.flatMap(x => x).filter(x => x === 1).reduce((a,b) => a+b, 0);
+    
+    // numberOfRedPieces = gameState.board.flatMap(x => x).filter(x => x === 2).map(x => 1).reduce((a,b) => a+b, 0);
+    
+
+    return {
+        numberOfBlackPieces, numberOfRedPieces
+    }
+}
+
+function drawScore(numberOfBlackPieces, numberOfRedPieces) {
     ctx.font = '14px Tahoma';
     ctx.fillStyle = 'black';
     ctx.fillText(`Black have ${numberOfBlackPieces} pieces`, 300, 30);
@@ -304,4 +318,5 @@ function numberOfPiecesLeft(){
     ctx.font = '14px Tahoma';
     ctx.fillStyle = 'black';
     ctx.fillText(`Red have ${numberOfRedPieces} pieces`, 450, 30);
+
 }
