@@ -108,7 +108,8 @@ function drawBoard() {
     ctx.fillStyle = 'black';
     ctx.fillText(`Turn of ${colors[gameState.turn]}`, 50, 30);
 
-    // console.log(gameState);
+    numberOfPiecesLeft();
+
 }
 
 function drawBoardSlot(i, j, color) {
@@ -284,7 +285,7 @@ function getAvailableMovesFromPosition(x,y) {
 
 function numberOfPiecesLeft(){
     let numberOfBlackPieces = 0;
-    let numberOfBlackPieces = 0;
+    let numberOfRedPieces = 0;
     for (let i = 0; i < 8; i++) {
         for (let j = 0; j < 8; j++){
             if(gameState.board[i][j] === 1){
@@ -298,9 +299,9 @@ function numberOfPiecesLeft(){
 
     ctx.font = '14px Tahoma';
     ctx.fillStyle = 'black';
-    ctx.fillText(`Black have ${numberOfBlackPieces}pieces`, 150, 30);
+    ctx.fillText(`Black have ${numberOfBlackPieces} pieces`, 300, 30);
 
     ctx.font = '14px Tahoma';
     ctx.fillStyle = 'black';
-    ctx.fillText(`Red have ${numberOfBlackPieces}pieces`, 100, 30);
+    ctx.fillText(`Red have ${numberOfRedPieces} pieces`, 450, 30);
 }
